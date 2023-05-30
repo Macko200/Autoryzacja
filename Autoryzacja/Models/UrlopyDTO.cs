@@ -21,6 +21,7 @@ namespace Autoryzacja.Models
         public string Type { get; set; }
 
         public string Status { get; set; }
+        public int IloscDni { get; set; }
     }
 
     public class CurrentDateAttribute : ValidationAttribute

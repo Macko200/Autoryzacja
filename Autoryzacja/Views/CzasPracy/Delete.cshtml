@@ -1,0 +1,10 @@
+﻿@model CzasPracy
+
+<h1>Usuń czas pracy</h1>
+
+<p>Czy na pewno chcesz usunąć czas pracy o identyfikatorze @Model.Id?</p>
+
+<form asp-action="Delete" asp-route-id="@Model.Id">
+    <button type="submit" class="btn btn-danger">Usuń</button>
+    <a asp-action="Index">Anuluj</a>
+</form>

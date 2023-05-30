@@ -44,7 +44,7 @@ namespace Autoryzacja.Controllers
             return View(urlop);
         }
 
-       // GET: Sessions/Create
+        // GET: Sessions/Create
         public IActionResult Create()
         {
             return View();
@@ -93,7 +93,6 @@ namespace Autoryzacja.Controllers
             return View(urlopy);
         }
 
-
         // GET: Sessions/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
@@ -107,27 +106,71 @@ namespace Autoryzacja.Controllers
             {
                 return NotFound();
             }
-            return View(urlop);
+
+            var urlopDTO = new UrlopyDTO
+            {
+                Id = urlop.Id,
+                Start = urlop.Start,
+                End = urlop.End,
+                Type = urlop.Type,
+                Status = urlop.Status
+            };
+
+            return View(urlopDTO);
         }
 
         // POST: Sessions/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Start,End,Type,Status")] Urlopy urlop)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Start,End,Type,Status")] UrlopyDTO urlopyDTO)
         {
-            if (id != urlop.Id)
+            if (id != urlopyDTO.Id)
             {
                 return NotFound();
             }
 
             if (ModelState.IsValid)
             {
-                _context.Update(urlop);
+                var existingUrlop = await _context.Urlopy.FindAsync(id);
+                if (existingUrlop == null)
+                {
+                    return NotFound();
+                }
+
+                existingUrlop.Start = urlopyDTO.Start.Date;
+                existingUrlop.End = urlopyDTO.End.Date;
+                existingUrlop.Type = urlopyDTO.Type;
+                existingUrlop.Status = urlopyDTO.Status;
+
+                if (existingUrlop.Start < DateTime.Today)
+                {
+                    ModelState.AddModelError(string.Empty, "Data początkowa nie może być wcześniejsza niż data obecna.");
+                    return View(urlopyDTO);
+                }
+
+                if (existingUrlop.Start > existingUrlop.End)
+                {
+                    ModelState.AddModelError(string.Empty, "Data końcowa nie może być wcześniejsza niż data początkowa.");
+                    return View(urlopyDTO);
+                }
+
+                // Obliczanie liczby dni trwania urlopu
+                TimeSpan duration = existingUrlop.End - existingUrlop.Start;
+                existingUrlop.IloscDni = duration.Days + 1; // Dodaj 1, aby uwzględnić również pierwszy dzień urlopu
+
+
+                _context.Update(existingUrlop);
                 await _context.SaveChangesAsync();
+                TempData["SuccessMessage"] = "Zmiany zostały zapisane poprawnie.";
                 return RedirectToAction(nameof(Index));
             }
-            return View(urlop);
+
+            return View(urlopyDTO);
         }
+
+
+
+
 
         // GET: Sessions/Delete/5
         public async Task<IActionResult> Delete(int? id)

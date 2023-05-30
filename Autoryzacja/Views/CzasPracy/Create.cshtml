@@ -1,0 +1,48 @@
+﻿
+@model Autoryzacja.Models.CzasPracyDTO
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h1>Create</h1>
+
+@using (Html.BeginForm())
+{
+    <div class="form-group">
+        <label asp-for="Data">Data</label>
+        <input asp-for="Data" class="form-control" type="date" />
+        <span asp-validation-for="Data" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Rozpoczecie">Rozpoczęcie:</label>
+        <select asp-for="Rozpoczecie" asp-items="@GetTimeSelectList()"></select>
+        <span asp-validation-for="Rozpoczecie" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Zakonczenie">Zakończenie:</label>
+        <select asp-for="Zakonczenie" asp-items="@GetTimeSelectList()"></select>
+        <span asp-validation-for="Zakonczenie" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="PracaZdalna">Praca zdalna:</label>
+        <input asp-for="PracaZdalna" />
+        <span asp-validation-for="PracaZdalna" class="text-danger"></span>
+    </div>
+
+    <button type="submit">Create</button>
+}
+
+@functions {
+    public List<SelectListItem> GetTimeSelectList()
+    {
+        var timeList = new List<SelectListItem>();
+        for (int i = 0; i <= 23; i++)
+        {
+            timeList.Add(new SelectListItem { Value = TimeSpan.FromHours(i).ToString(), Text = TimeSpan.FromHours(i).ToString(@"hh\:mm") });
+        }
+        return timeList;
+    }
+}

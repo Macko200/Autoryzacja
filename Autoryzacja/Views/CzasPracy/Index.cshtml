@@ -1,0 +1,42 @@
+﻿@model List<CzasPracy>
+@using Autoryzacja.Models
+
+
+<h1>Czas pracy</h1>
+
+<p>
+    <a asp-action="Create">Dodaj czas pracy</a>
+</p>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Data</th>
+            <th>Rozpoczęcie</th>
+            <th>Zakończenie</th>
+            <th>Praca zdalna</th>
+            <th>Ilość godzin</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var czasPracy in Model)
+        {
+            <tr>
+                <td>@czasPracy.Data.ToShortDateString()</td>
+                <td>@czasPracy.Rozpoczecie</td>
+                <td>@czasPracy.Zakonczenie</td>
+                <td>@(czasPracy.PracaZdalna ? "Tak" : "Nie")</td>
+                <td>@czasPracy.IloscGodzin</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@czasPracy.Id">Edytuj</a> |
+                    <a asp-action="Details" asp-route-id="@czasPracy.Id">Szczegóły</a> |
+                    <a asp-action="Delete" asp-route-id="@czasPracy.Id">Usuń</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+<div class="text-center">
+    <img src="~/img/czaspracy.jpg" class="img-fluid" width="800" height="400" />
+</div>

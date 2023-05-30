@@ -1,0 +1,41 @@
+﻿@model List<RaportViewModel>
+
+@{
+    ViewData["Title"] = "Raporty";
+}
+
+<h1>Raporty</h1>
+
+@if (Model != null && Model.Any())
+{
+    <table class ="table">
+        <thead>
+            <tr>
+                <th>Użytkownik</th>
+                <th>Godziny</th>
+                <th>Godziny zdalnie</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var raport in Model)
+            {
+                <tr>
+                    <td>@raport.UserName</td>
+                    <td>@raport.PrzepracowaneGodziny</td>
+                    <td>@raport.PrzepracowaneGodzinyZdalne</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>Brak danych do wyświetlenia.</p>
+}
+
+<p>
+    <a asp-action="Index">Powrót</a>
+</p>
+
+
+

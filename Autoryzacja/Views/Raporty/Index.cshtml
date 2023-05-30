@@ -1,0 +1,21 @@
+﻿@{
+    ViewData["Title"] = "Raporty";
+}
+
+<h1>Raporty</h1>
+
+@using (Html.BeginForm("Raporty", "Raporty", FormMethod.Get))
+{
+    <div>
+        <label for="fromDate">Od:</label>
+        <input type="date" id="fromDate" name="fromDate" required />
+
+        <label for="toDate">Do:</label>
+        <input type="date" id="toDate" name="toDate" required />
+
+        <button type="submit">Pokaż raport</button>
+    </div>
+}
+<div class="text-center">
+    <img src="~/img/raport.jpg" class="img-fluid" width="800" height="400" />
+</div>

@@ -1,0 +1,45 @@
+﻿@model Autoryzacja.Models.CzasPracy
+
+@{
+    ViewData["Title"] = "Szczegóły czasu pracy";
+}
+
+<h1>Szczegóły czasu pracy</h1>
+
+<dl class="row">
+    <dt class="col-sm-2">
+        @Html.DisplayNameFor(model => model.Data)
+    </dt>
+    <dd class="col-sm-10">
+        @Model.Data.ToShortDateString()
+    </dd>
+    <dt class="col-sm-2">
+        @Html.DisplayNameFor(model => model.Rozpoczecie)
+    </dt>
+    <dd class="col-sm-10">
+        @Model.Rozpoczecie
+    </dd>
+    <dt class="col-sm-2">
+        @Html.DisplayNameFor(model => model.Zakonczenie)
+    </dt>
+    <dd class="col-sm-10">
+        @Model.Zakonczenie
+    </dd>
+    <dt class="col-sm-2">
+        @Html.DisplayNameFor(model => model.PracaZdalna)
+    </dt>
+    <dd class="col-sm-10">
+        @(Model.PracaZdalna ? "Tak" : "Nie")
+    </dd>
+    <dt class="col-sm-2">
+        @Html.DisplayNameFor(model => model.IloscGodzin)
+    </dt>
+    <dd class="col-sm-10">
+        @Model.IloscGodzin
+    </dd>
+</dl>
+
+<p>
+    <a asp-action="Edit" asp-route-id="@Model.Id">Edytuj</a> |
+    <a asp-action="Index">Powrót do listy</a>
+</p>
