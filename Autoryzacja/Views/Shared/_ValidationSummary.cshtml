@@ -1,0 +1,20 @@
+﻿@{
+    if (ViewData.ModelState.IsValid)
+    {
+        return;
+    }
+}
+
+<div class="alert alert-danger">
+    <h4>Błędy walidacji:</h4>
+    <ul>
+        @foreach (var key in ViewData.ModelState.Keys)
+        {
+            if (ViewData.ModelState[key].Errors.Any())
+            {
+                <li>@key: @ViewData.ModelState[key].Errors[0].ErrorMessage</li>
+            }
+        }
+    </ul>
+</div>
+

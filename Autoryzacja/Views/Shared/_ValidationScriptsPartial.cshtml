@@ -1,0 +1,12 @@
+﻿<script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+<script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+<script>
+    $(function () {
+        // Przywróć błędy walidacji w polach z danymi
+        var validationSummary = $('#validationSummary');
+        if (validationSummary && validationSummary.find('li').length) {
+            $('.field-validation-valid').removeClass('field-validation-valid').addClass('field-validation-error');
+            $('.input-validation-valid').removeClass('input-validation-valid').addClass('input-validation-error');
+        }
+    });
+</script>
