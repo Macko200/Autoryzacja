@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Xml.Linq;
 
 namespace Autoryzacja.Models
@@ -16,6 +17,9 @@ namespace Autoryzacja.Models
         public int IloscDni { get; set; }
         public string UserId { get; set; }
         public IdentityUser? User { get; set; }
+        [NotMapped]
+        public string UserName { get; set; } // dodane pole
     }
+   
 
 }

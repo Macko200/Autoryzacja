@@ -113,7 +113,7 @@ namespace Autoryzacja.Controllers
                 Start = urlop.Start,
                 End = urlop.End,
                 Type = urlop.Type,
-                Status = urlop.Status
+                Status = "oczekujące",
             };
 
             return View(urlopDTO);
