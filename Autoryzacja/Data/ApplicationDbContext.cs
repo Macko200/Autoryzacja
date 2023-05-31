@@ -12,12 +12,7 @@ namespace Autoryzacja.Data
         {
         }
 
-        public DbSet<Autoryzacja.Models.ExerciseType> ExerciseType { get; set; } = default!;
-
-        public DbSet<Autoryzacja.Models.Exercise>? Exercise { get; set; }
-
-        public DbSet<Autoryzacja.Models.Session>? Session { get; set; }
-
+       
         public DbSet<Autoryzacja.Models.Urlopy>? Urlopy { get; set; }
 
         public DbSet<Autoryzacja.Models.CzasPracy>? CzasPracy { get; set; }
