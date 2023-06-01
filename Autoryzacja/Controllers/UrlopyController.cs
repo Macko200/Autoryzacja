@@ -4,10 +4,12 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Autoryzacja.Controllers
 {
-    //[Authorize()]
+    [Authorize] // Dodany atrybut Authorize do wymagania uwierzytelnienia dla dostępu do kontrolera
     public class UrlopyController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -21,8 +23,16 @@ namespace Autoryzacja.Controllers
 
         public async Task<IActionResult> Index()
         {
-            // Pobierz dane z bazy danych lub innych źródeł
-            List<Urlopy> urlopyList = await _context.Urlopy.ToListAsync();
+            var user = await _userManager.GetUserAsync(User); // Pobranie zalogowanego użytkownika
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            // Pobranie urlopów tylko dla zalogowanego użytkownika
+            var urlopyList = await _context.Urlopy
+                .Where(u => u.UserId == user.Id)
+                .ToListAsync();
 
             return View(urlopyList);
         }
@@ -55,7 +65,12 @@ namespace Autoryzacja.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Start,End,Type,Status")] UrlopyDTO urlopyDTO)
         {
-            var user = await _userManager.FindByEmailAsync(User.Identity.Name);
+            var user = await _userManager.GetUserAsync(User); // Pobranie zalogowanego użytkownika
+            if (user == null)
+            {
+                return NotFound();
+            }
+
             var urlopy = new Urlopy
             {
                 Id = urlopyDTO.Id,
@@ -101,7 +116,14 @@ namespace Autoryzacja.Controllers
                 return NotFound();
             }
 
-            var urlop = await _context.Urlopy.FindAsync(id);
+            var user = await _userManager.GetUserAsync(User); // Pobranie zalogowanego użytkownika
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            var urlop = await _context.Urlopy
+                .FirstOrDefaultAsync(m => m.Id == id && m.UserId == user.Id); // Pobranie urlopu tylko dla zalogowanego użytkownika
             if (urlop == null)
             {
                 return NotFound();

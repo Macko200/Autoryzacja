@@ -1,5 +1,6 @@
 ﻿using Autoryzacja.Data;
 using Autoryzacja.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -9,6 +10,7 @@ using System.Linq;
 
 namespace Autoryzacja.Controllers
 {
+    [Authorize]
     public class RaportyController : Controller
     {
         private readonly ApplicationDbContext _context;

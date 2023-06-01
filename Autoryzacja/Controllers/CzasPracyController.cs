@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Autoryzacja.Controllers
 {
-    //[Authorize()]
+    [Authorize] // Dodany atrybut Authorize do wymagania uwierzytelnienia dla dostępu do kontrolera
     public class CzasPracyController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -24,8 +24,16 @@ namespace Autoryzacja.Controllers
 
         public async Task<IActionResult> Index()
         {
-            // Pobierz dane z bazy danych lub innych źródeł
-            List<CzasPracy> czasPracyList = await _context.CzasPracy.ToListAsync();
+            var user = await _userManager.GetUserAsync(User); // Pobranie zalogowanego użytkownika
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            // Pobranie danych czasu pracy tylko dla zalogowanego użytkownika
+            var czasPracyList = await _context.CzasPracy
+                .Where(c => c.UserId == user.Id)
+                .ToListAsync();
 
             return View(czasPracyList);
         }
@@ -41,7 +49,12 @@ namespace Autoryzacja.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Data,Rozpoczecie,Zakonczenie,PracaZdalna")] CzasPracyDTO czasPracyDTO)
         {
-            var user = await _userManager.FindByEmailAsync(User.Identity.Name);
+            var user = await _userManager.GetUserAsync(User); // Pobranie zalogowanego użytkownika
+            if (user == null)
+            {
+                return NotFound();
+            }
+
             var czasPracy = new CzasPracy
             {
                 Id = czasPracyDTO.Id,
@@ -73,8 +86,9 @@ namespace Autoryzacja.Controllers
             return View(czasPracy);
         }
 
-       
 
+
+        // GET: CzasPracy/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -86,6 +100,13 @@ namespace Autoryzacja.Controllers
             if (czasPracy == null)
             {
                 return NotFound();
+            }
+
+            // Sprawdzenie, czy użytkownik ma uprawnienia do edycji czasu pracy
+            var user = await _userManager.GetUserAsync(User);
+            if (czasPracy.UserId != user.Id)
+            {
+                return Forbid(); // Odmowa dostępu, jeśli użytkownik nie ma uprawnień
             }
 
             var czasPracyDTO = new CzasPracyDTO
@@ -100,6 +121,7 @@ namespace Autoryzacja.Controllers
             return View(czasPracyDTO);
         }
 
+        // POST: CzasPracy/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Data,Rozpoczecie,Zakonczenie,PracaZdalna")] CzasPracyDTO czasPracyDTO)
@@ -109,37 +131,46 @@ namespace Autoryzacja.Controllers
                 return NotFound();
             }
 
-            if (ModelState.IsValid)
+            var user = await _userManager.GetUserAsync(User); // Pobranie zalogowanego użytkownika
+            if (user == null)
             {
-                var existingCzasPracy = await _context.CzasPracy.FindAsync(id);
-                if (existingCzasPracy == null)
-                {
-                    return NotFound();
-                }
-
-                existingCzasPracy.Data = czasPracyDTO.Data.Date;
-                existingCzasPracy.Rozpoczecie = czasPracyDTO.Rozpoczecie;
-                existingCzasPracy.Zakonczenie = czasPracyDTO.Zakonczenie;
-                existingCzasPracy.PracaZdalna = czasPracyDTO.PracaZdalna;
-
-                if (existingCzasPracy.Rozpoczecie > existingCzasPracy.Zakonczenie)
-                {
-                    ModelState.AddModelError(string.Empty, "Godzina zakończenia pracy nie może być wcześniejsza niż godzina rozpoczęcia pracy.");
-                    return View(czasPracyDTO);
-                }
-
-                // Obliczanie ilości przepracowanych godzin
-                TimeSpan duration = existingCzasPracy.Zakonczenie - existingCzasPracy.Rozpoczecie;
-                existingCzasPracy.IloscGodzin = duration.TotalHours;
-
-                _context.Update(existingCzasPracy);
-                await _context.SaveChangesAsync();
-                TempData["SuccessMessage"] = "Zmiany zostały zapisane poprawnie.";
-                return RedirectToAction(nameof(Index));
+                return NotFound();
             }
 
-            return View(czasPracyDTO);
+            var existingCzasPracy = await _context.CzasPracy.FindAsync(id);
+            if (existingCzasPracy == null)
+            {
+                return NotFound();
+            }
+
+            // Sprawdzenie, czy użytkownik ma uprawnienia do edycji czasu pracy
+            if (existingCzasPracy.UserId != user.Id)
+            {
+                return Forbid(); // Odmowa dostępu, jeśli użytkownik nie ma uprawnień
+            }
+
+            existingCzasPracy.Data = czasPracyDTO.Data.Date;
+            existingCzasPracy.Rozpoczecie = czasPracyDTO.Rozpoczecie;
+            existingCzasPracy.Zakonczenie = czasPracyDTO.Zakonczenie;
+            existingCzasPracy.PracaZdalna = czasPracyDTO.PracaZdalna;
+
+            if (existingCzasPracy.Rozpoczecie > existingCzasPracy.Zakonczenie)
+            {
+                ModelState.AddModelError(string.Empty, "Godzina zakończenia pracy nie może być wcześniejsza niż godzina rozpoczęcia pracy.");
+                return View(czasPracyDTO);
+            }
+
+            // Obliczanie ilości przepracowanych godzin
+            TimeSpan duration = existingCzasPracy.Zakonczenie - existingCzasPracy.Rozpoczecie;
+            existingCzasPracy.IloscGodzin = duration.TotalHours;
+
+            _context.Update(existingCzasPracy);
+            await _context.SaveChangesAsync();
+            TempData["SuccessMessage"] = "Zmiany zostały zapisane poprawnie.";
+            return RedirectToAction(nameof(Index));
         }
+
+         
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
