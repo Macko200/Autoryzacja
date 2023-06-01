@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Autoryzacja.Controllers
 {
-    [Authorize()]
+    //[Authorize()]
     public class UrlopyController : Controller
     {
         private readonly ApplicationDbContext _context;
