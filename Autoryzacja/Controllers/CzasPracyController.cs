@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Autoryzacja.Controllers
 {
-    [Authorize()]
+    //[Authorize()]
     public class CzasPracyController : Controller
     {
         private readonly ApplicationDbContext _context;
