@@ -10,7 +10,7 @@ using System.Linq;
 
 namespace Autoryzacja.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "Admin")]
     public class RaportyController : Controller
     {
         private readonly ApplicationDbContext _context;

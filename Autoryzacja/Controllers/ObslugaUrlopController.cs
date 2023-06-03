@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Autoryzacja.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "Pracodawca")]
     public class ObslugaUrlopController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -89,12 +89,7 @@ namespace Autoryzacja.Controllers
                 existingUrlop.Type = urlopyDTO.Type;
                 existingUrlop.Status = urlopyDTO.Status;
 
-                if (existingUrlop.Start < DateTime.Today)
-                {
-                    ModelState.AddModelError(string.Empty, "Data początkowa nie może być wcześniejsza niż data obecna.");
-                    return View(urlopyDTO);
-                }
-
+                
                 if (existingUrlop.Start > existingUrlop.End)
                 {
                     ModelState.AddModelError(string.Empty, "Data końcowa nie może być wcześniejsza niż data początkowa.");
